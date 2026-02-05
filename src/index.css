@@ -4,6 +4,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
 @layer base {
   :root {
     --background: 220 20% 97%;
@@ -52,9 +54,9 @@
     --gradient-hero: linear-gradient(135deg, hsl(220 30% 12%) 0%, hsl(220 35% 22%) 50%, hsl(230 30% 18%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(220 30% 15% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 30% 15% / 0.1), 0 2px 4px -2px hsl(220 30% 15% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(220 30% 15% / 0.1), 0 4px 6px -4px hsl(220 30% 15% / 0.1);
+    --shadow-sm: 0px 1px 1.5px 0px hsla(0, 0%, 0%, 0.57);
+    --shadow-md: 0px 1px 4.5px 0px hsla(0, 0%, 0%, 0.57);
+    --shadow-lg: 0px 1px 7.5px 0px hsla(0, 0%, 0%, 0.57);
     --shadow-glow: 0 0 30px hsl(45 90% 60% / 0.2);
 
     --sidebar-background: 0 0% 98%;
@@ -65,6 +67,7 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --shadow: 0px 1px 3px 0px hsla(0, 0%, 0%, 0.57);
   }
 
   .dark {
@@ -107,6 +110,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.625rem;
+    --shadow-sm: 0px 1px 1.5px 0px hsla(0, 0%, 0%, 0.57);
+    --shadow: 0px 1px 3px 0px hsla(0, 0%, 0%, 0.57);
+    --shadow-md: 0px 1px 4.5px 0px hsla(0, 0%, 0%, 0.57);
+    --shadow-lg: 0px 1px 7.5px 0px hsla(0, 0%, 0%, 0.57);
   }
 }
 
