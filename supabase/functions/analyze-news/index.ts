@@ -5,6 +5,48 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Rate limiting configuration
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute per IP
+const MAX_TEXT_LENGTH = 10000; // Maximum 10,000 characters
+
+// In-memory rate limit store (resets on function cold start)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function getClientIP(req: Request): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+         req.headers.get("x-real-ip") || 
+         "unknown";
+}
+
+function checkRateLimit(clientIP: string): { allowed: boolean; retryAfter?: number } {
+  const now = Date.now();
+  const record = rateLimitStore.get(clientIP);
+
+  // Clean up expired entries periodically
+  if (rateLimitStore.size > 1000) {
+    for (const [ip, data] of rateLimitStore.entries()) {
+      if (data.resetTime < now) {
+        rateLimitStore.delete(ip);
+      }
+    }
+  }
+
+  if (!record || record.resetTime < now) {
+    rateLimitStore.set(clientIP, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true };
+  }
+
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfter = Math.ceil((record.resetTime - now) / 1000);
+    return { allowed: false, retryAfter };
+  }
+
+  record.count++;
+  return { allowed: true };
+}
+
+
 const systemPrompt = `You are an expert media analyst specializing in detecting bias, propaganda techniques, and manipulation in news content. Your role is to analyze headlines and short articles to identify:
 
 1. Emotional tone and sentiment
@@ -69,15 +111,48 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Rate limiting check
+  const clientIP = getClientIP(req);
+  const rateLimitResult = checkRateLimit(clientIP);
+  
+  if (!rateLimitResult.allowed) {
+    return new Response(
+      JSON.stringify({ 
+        error: "Rate limit exceeded. Please wait before making another request.",
+        retryAfter: rateLimitResult.retryAfter
+      }),
+      { 
+        status: 429, 
+        headers: { 
+          ...corsHeaders, 
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimitResult.retryAfter)
+        } 
+      }
+    );
+  }
+
   try {
     const { text } = await req.json();
 
+    // Input validation
     if (!text || typeof text !== "string" || text.trim().length === 0) {
       return new Response(
         JSON.stringify({ error: "Please provide text to analyze" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Length validation
+    if (text.length > MAX_TEXT_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Text must be ${MAX_TEXT_LENGTH.toLocaleString()} characters or less` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Sanitize input - remove control characters except newlines and tabs
+    const sanitizedText = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -94,7 +169,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Analyze the following news headline or article:\n\n"${text}"` },
+          { role: "user", content: `Analyze the following news headline or article:\n\n"${sanitizedText}"` },
         ],
         temperature: 0.3,
       }),
@@ -141,10 +216,12 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Analysis error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    // Log error internally without exposing details
+    console.error("Analysis error:", error instanceof Error ? error.message : "Unknown error");
+    
+    // Return generic error message to client
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "An error occurred while analyzing the text. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
