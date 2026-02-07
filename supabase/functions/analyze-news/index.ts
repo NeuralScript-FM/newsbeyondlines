@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,41 @@ const MAX_TEXT_LENGTH = 10000; // Maximum 10,000 characters
 
 // In-memory rate limit store (resets on function cold start)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+// Authentication helper
+async function authenticateRequest(req: Request): Promise<{ userId: string } | { error: Response }> {
+  const authHeader = req.headers.get("Authorization");
+  
+  if (!authHeader?.startsWith("Bearer ")) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: "Unauthorized. Please sign in to use this feature." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
+    };
+  }
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+  
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: authHeader } }
+  });
+
+  const token = authHeader.replace("Bearer ", "");
+  const { data, error } = await supabase.auth.getClaims(token);
+
+  if (error || !data?.claims) {
+    return {
+      error: new Response(
+        JSON.stringify({ error: "Invalid or expired session. Please sign in again." }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
+    };
+  }
+
+  return { userId: data.claims.sub as string };
+}
 
 function getClientIP(req: Request): string {
   return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
@@ -111,9 +147,17 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Rate limiting check
+  // Authentication check
+  const authResult = await authenticateRequest(req);
+  if ("error" in authResult) {
+    return authResult.error;
+  }
+  const userId = authResult.userId;
+
+  // Rate limiting check (now using userId for better tracking)
   const clientIP = getClientIP(req);
-  const rateLimitResult = checkRateLimit(clientIP);
+  const rateLimitKey = `${userId}-${clientIP}`;
+  const rateLimitResult = checkRateLimit(rateLimitKey);
   
   if (!rateLimitResult.allowed) {
     return new Response(
