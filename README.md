@@ -1,10 +1,10 @@
-# 📰 NewsLens — AI-Powered News Bias & Framing Detector
+#  NewsLens — AI-Powered News Bias & Framing Detector
 
 **NewsLens** is an AI-driven web application that analyzes news headlines and short articles to detect **bias, framing, propaganda techniques, and AI-generated writing patterns**. It helps users understand *how* news is presented and *what it implies*, rather than verifying factual truth.
 
----
 
-## 🔹 Features
+
+##  Features
 
 - **Bias & Framing Detection:** Identify loaded or emotionally charged language, selective emphasis, and framing shifts
 - **Propaganda Indicators:** Detect fear appeal, blame framing, oversimplification, or exaggeration
@@ -12,12 +12,12 @@
 - **Narrative Insights:** Suggest who may benefit or lose from a headline and what the intended impact might be
 - **Explainable Output:** Human-readable explanations with confidence scores
 
----
 
-## 🛠️ Tech Stack
+
+##  Tech Stack
 
 | Layer       | Technology / Tool                     |
-|------------|--------------------------------------|
+
 | Frontend    | HTML, CSS, JavaScript (Vanilla / optional React) |
 | Backend     | Python (Flask / FastAPI)             |
 | NLP         | HuggingFace Transformers, VADER, TextBlob |
@@ -25,9 +25,9 @@
 | Data        | Manually curated news headlines + AI-generated examples |
 | Deployment  | Optional: Streamlit, Heroku, or local Flask server |
 
----
 
-## 📐 Architecture Overview
+
+##  Architecture Overview
 
 ```
 User Input (Headline / Article)
@@ -52,14 +52,14 @@ Structured Output (JSON / UI)
              • Interpretive insights
 ```
 
----
 
-## ⚡ Getting Started (Demo / Local Run)
+
+##  Getting Started 
 
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/newslens.git
+git clone https:/NeuralScript-FM/github.com//newslens.git
 cd newslens
 ```
 
@@ -85,9 +85,9 @@ python app.py  # or uvicorn main:app --reload if using FastAPI
 
 5. **Open the frontend in a browser** or visit local URL if using Streamlit/Flask.
 
----
 
-## 📂 Repository Structure
+
+##  Repository Structure
 
 ```
 newslens/
@@ -102,33 +102,33 @@ newslens/
 └── data/                  # Example news headlines & AI-generated samples
 ```
 
----
 
-## ⚠️ Limitations
+
+##  Limitations
 
 - NewsLens provides **interpretive analysis**, not fact-checking
 - Bias detection is heuristic and model-based; results are **suggestive, not definitive**
 - Small datasets (demo-level) limit coverage and accuracy
 - AI detection is probabilistic and **may produce false positives/negatives**
 
----
 
-## 🔮 Future Enhancements
+
+##  Future Enhancements
 
 - Multi-source comparison for the same news story
 - Browser plugin for real-time analysis
 - Dataset expansion and fine-tuning for higher accuracy
 - Visualization of bias trends over time
 
----
 
-## 🧑‍💻 Development Notes
+
+##  Development Notes
 
 - Initial scaffold and backend logic were AI-assisted
 - Feature design, system architecture, and evaluation criteria were defined by the author
 - All outputs and interface decisions are intentional for demo purposes
 
----
+
 
 ✅ This README is professional, GitHub-native, and judge-ready.
 
