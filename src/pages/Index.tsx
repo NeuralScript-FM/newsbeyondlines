@@ -1,17 +1,31 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import TextInput from "@/components/TextInput";
 import AnalysisResults, { AnalysisData } from "@/components/AnalysisResults";
-import { Newspaper, Shield, Eye } from "lucide-react";
+import { Newspaper, Shield, Eye, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [originalText, setOriginalText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user, session, isLoading: authLoading } = useAuth();
 
   const handleAnalyze = async (text: string) => {
+    if (!session) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to analyze text.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setOriginalText(text);
     
@@ -22,7 +36,7 @@ const Index = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ text }),
         }
@@ -80,7 +94,26 @@ const Index = () => {
         {/* Input Section */}
         <section className="max-w-3xl mx-auto mb-12">
           <div className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-soft">
-            <TextInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+            {authLoading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Loading...
+              </div>
+            ) : user ? (
+              <TextInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+            ) : (
+              <div className="text-center py-8">
+                <LogIn className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  Sign in to analyze news
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Create a free account to start detecting bias and propaganda
+                </p>
+                <Button asChild>
+                  <Link to="/auth">Sign In / Sign Up</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </section>
 
