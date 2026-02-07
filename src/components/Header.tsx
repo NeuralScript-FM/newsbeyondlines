@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   return (
@@ -13,10 +14,13 @@ const Header = () => {
             <p className="text-xs text-muted-foreground">Media Analysis Tool</p>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-6 text-sm">
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">How it works</a>
-          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
-        </nav>
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">How it works</a>
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
