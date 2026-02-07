@@ -41,7 +41,7 @@ Structured Output (JSON / UI)
 ```
 
 
-## 🛠️ Project Setup / Run Instructions
+## Project Setup / Run Instructions
 1. Clone the repo:
    git clone https://github.com/NeuralScript-FM/newsbeyondlines.git
    
