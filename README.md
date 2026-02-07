@@ -1,4 +1,5 @@
-# Welcome to your Lovable project
+# This project was created using AI-assisted development tools (Lovable) to scaffold the initial application.
+The concept, scope, feature design, and evaluation criteria were defined and guided by the author.
 
 ## Project info
 
