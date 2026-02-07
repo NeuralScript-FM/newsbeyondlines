@@ -14,18 +14,6 @@
 
 
 
-##  Tech Stack
-
-| Layer       | Technology / Tool                     |
-
-| Frontend    | HTML, CSS, JavaScript (Vanilla / optional React) |
-| Backend     | Python (Flask / FastAPI)             |
-| NLP         | HuggingFace Transformers, VADER, TextBlob |
-| AI Logic    | Prompt-engineered LLMs (for inference and framing analysis) |
-| Data        | Manually curated news headlines + AI-generated examples |
-| Deployment  | Optional: Streamlit, Heroku, or local Flask server |
-
-
 
 ##  Architecture Overview
 
@@ -53,37 +41,17 @@ Structured Output (JSON / UI)
 ```
 
 
-
-##  Getting Started 
-
-1. **Clone the repository:**
-
-```bash
-git clone https:/NeuralScript-FM/github.com//newslens.git
-cd newslens
-```
-
-2. **Create a virtual environment (optional but recommended):**
-
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
-
-3. **Install dependencies:**
-
-```bash
-pip install -r requirements.txt
-```
-
-4. **Run the backend server:**
-
-```bash
-python app.py  # or uvicorn main:app --reload if using FastAPI
-```
-
-5. **Open the frontend in a browser** or visit local URL if using Streamlit/Flask.
+## 🛠️ Project Setup / Run Instructions
+1. Clone the repo:
+   git clone https://github.com/NeuralScript-FM/newsbeyondlines.git
+   
+3. Install dependencies:
+   npm install
+   
+5. Run locally:
+   npm run dev
+   
+7. Open the local URL in your browser (usually http://localhost:5173)
 
 
 
@@ -106,8 +74,8 @@ newslens/
 
 ##  Limitations
 
-- NewsLens provides **interpretive analysis**, not fact-checking
-- Bias detection is heuristic and model-based; results are **suggestive, not definitive**
+- NewsLens provides **interpretive analysis**, NOT fact-checking
+- Bias detection is heuristic and model-based; results are suggestive, NOT definitive
 - Small datasets (demo-level) limit coverage and accuracy
 - AI detection is probabilistic and **may produce false positives/negatives**
 
@@ -130,5 +98,4 @@ newslens/
 
 
 
-✅ This README is professional, GitHub-native, and judge-ready.
 
